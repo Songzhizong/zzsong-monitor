@@ -1,0 +1,11 @@
+### 创建集群
+POST http://127.0.0.1:31201/monitor/cluster/create
+Content-Type: application/json
+
+{
+  "code": "Default",
+  "note": "默认集群",
+  "address": "http://127.0.0.1:31206",
+  "connectType": "DIRECT"
+}
+

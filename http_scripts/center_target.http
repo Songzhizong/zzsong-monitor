@@ -1,0 +1,54 @@
+### 获取或者创建资源
+GET http://127.0.0.1:31201/monitor/resource/get_or_create?cluster=Default&ident=zzsong
+
+### 批量添加标签
+POST http://127.0.0.1:31201/monitor/resource/tag/add
+Content-Type: application/json
+
+{
+  "cluster": "Default",
+  "idents": [
+    "zzsong"
+  ],
+  "tags": [
+    "os=mac",
+    "group=1"
+  ]
+}
+
+### 批量移除标签
+POST http://127.0.0.1:31201/monitor/resource/tag/remove
+Content-Type: application/json
+
+{
+  "cluster": "Default",
+  "idents": [
+    "zzsong"
+  ],
+  "tags": [
+    "group=1"
+  ]
+}
+
+### 批量移除标签
+POST http://127.0.0.1:31201/monitor/resource/change_note
+Content-Type: application/json
+
+{
+  "cluster": "Default",
+  "idents": [
+    "zzsong"
+  ],
+  "note": null
+}
+
+### 批量删除
+POST http://127.0.0.1:31201/monitor/resource/delete
+Content-Type: application/json
+
+{
+  "cluster": "Default",
+  "idents": [
+    "zzsong"
+  ]
+}

@@ -1,0 +1,6 @@
+logging:
+  config: classpath:logback-spring-dev.xml
+spring:
+  redis:
+    host: 127.0.0.1
+    port: 6379

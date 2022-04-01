@@ -1,0 +1,18 @@
+server:
+  port: 31201
+  shutdown: graceful
+spring:
+  application:
+    name: ZZSONG-MONITOR-CENTER
+  jackson:
+    locale: zh_CN
+    time-zone: 'GMT+8'
+    date-format: yyyy-MM-dd HH:mm:ss
+    default-property-inclusion: non_null
+  jpa:
+    database: mysql
+    open-in-view: true
+  main:
+    allow-bean-definition-overriding: true
+  profiles:
+    active: local
