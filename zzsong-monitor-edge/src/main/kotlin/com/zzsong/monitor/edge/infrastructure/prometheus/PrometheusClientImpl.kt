@@ -9,6 +9,8 @@ import com.zzsong.monitor.common.prometheus.PrometheusQueryRangeResp
 import com.zzsong.monitor.common.prometheus.PrometheusQueryResp
 import com.zzsong.monitor.common.prometheus.PrometheusResult
 import com.zzsong.monitor.common.prometheus.exception.PrometheusException
+import com.zzsong.monitor.edge.infrastructure.prometheus.protobuf.Remote
+import com.zzsong.monitor.edge.infrastructure.prometheus.protobuf.Types
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.slf4j.Logger
@@ -20,8 +22,6 @@ import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.DefaultUriBuilderFactory
 import org.xerial.snappy.Snappy
-import prometheus.Remote
-import prometheus.Types
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import java.net.URLEncoder

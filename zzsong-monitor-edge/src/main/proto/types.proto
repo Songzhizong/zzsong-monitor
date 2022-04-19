@@ -12,7 +12,7 @@
 // limitations under the License.
 
 syntax = "proto3";
-package prometheus;
+package com.zzsong.monitor.edge.infrastructure.prometheus.protobuf;
 
 option go_package = "prompb";
 
