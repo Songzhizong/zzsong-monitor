@@ -3,16 +3,22 @@ package com.zzsong.monitor.center.application
 import cn.idealframework.transmission.exception.BadRequestException
 import com.zzsong.monitor.center.domain.model.cluster.ClusterDo
 import com.zzsong.monitor.center.domain.model.cluster.ClusterRepository
+import com.zzsong.monitor.center.infrastructure.edge.EdgeConnector
 import com.zzsong.monitor.common.constants.ConnectType
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 /**
  * @author 宋志宗 on 2022/3/19
  */
 @Service
-class ClusterService(private val clusterRepository: ClusterRepository) {
+@Transactional(rollbackFor = [Throwable::class])
+class ClusterService(
+  private val edgeConnector: EdgeConnector,
+  private val clusterRepository: ClusterRepository
+) {
   companion object {
     private val log: Logger = LoggerFactory.getLogger(ClusterService::class.java)
   }
@@ -35,6 +41,8 @@ class ClusterService(private val clusterRepository: ClusterRepository) {
     var clusterDo = ClusterDo.create(code, note, address, connectType)
     clusterDo = clusterRepository.save(clusterDo)
     log.info("新增集群: [{} {}]", clusterDo.code, clusterDo.note)
+    // 广播通知所有节点刷新边缘集群客户端缓存
+    edgeConnector.pubRefreshBroadcast()
     return clusterDo
   }
 
@@ -52,6 +60,8 @@ class ClusterService(private val clusterRepository: ClusterRepository) {
     val clusterDo = clusterRepository.findRequiredById(id)
     clusterDo.update(note, address, connectType)
     clusterRepository.save(clusterDo)
+    // 广播通知所有节点刷新边缘集群客户端缓存
+    edgeConnector.pubRefreshBroadcast()
     return clusterDo
   }
 
@@ -67,5 +77,7 @@ class ClusterService(private val clusterRepository: ClusterRepository) {
       return
     }
     clusterRepository.delete(clusterDo)
+    // 广播通知所有节点刷新边缘集群客户端缓存
+    edgeConnector.pubRefreshBroadcast()
   }
 }

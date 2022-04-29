@@ -10,7 +10,9 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Version;
-import org.springframework.data.mongodb.core.index.*;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.annotation.Nonnull;
@@ -26,21 +28,25 @@ import java.util.Set;
  */
 @Getter
 @Setter
-@Document("monitor_resource")
+@Document(ResourceDo.DOCUMENT_NAME)
 @CompoundIndexes({
-  @CompoundIndex(name = "uk_monitor_resource_cluster_ident", def = "{cluster:1, ident:1}", unique = true)
+  @CompoundIndex(name = "cluster_ident", def = "{cluster:1, ident:1}", unique = true),
+  @CompoundIndex(name = "bizGroupId", def = "{bizGroupId:1}"),
+  @CompoundIndex(name = "tags", def = "{tags:1}"),
+  @CompoundIndex(name = "updatedTime", def = "{updatedTime:-1}"),
 })
 public class ResourceDo {
+  public static final String DOCUMENT_NAME = "monitor_resource";
 
   /** 主键 */
   @Id
   private long id = -1;
 
   /** 业务组id */
-  @Indexed(name = "monitor_resource_group")
   private long bizGroupId = -1;
 
-  /** 集群id */
+  /** 集群编码 */
+  @Nonnull
   private String cluster = "";
 
   /** 资源标识 */
@@ -69,8 +75,16 @@ public class ResourceDo {
 
   /** 更新时间 */
   @LastModifiedDate
-  @Indexed(name = "monitor_resource_updated_time", direction = IndexDirection.DESCENDING)
   private long updatedTime;
+
+  @Nonnull
+  public static ResourceDo create(@Nonnull String cluster,
+                                  @Nonnull String ident) {
+    ResourceDo resourceDo = new ResourceDo();
+    resourceDo.setCluster(cluster);
+    resourceDo.setIdent(ident);
+    return resourceDo;
+  }
 
   /**
    * 添加标签
@@ -129,15 +143,6 @@ public class ResourceDo {
   }
 
   @Nonnull
-  public static ResourceDo create(@Nonnull String cluster,
-                                  @Nonnull String ident) {
-    ResourceDo resourceDo = new ResourceDo();
-    resourceDo.setCluster(cluster);
-    resourceDo.setIdent(ident);
-    return resourceDo;
-  }
-
-  @Nonnull
   public Resource toResource() {
     Resource resource = new Resource();
     resource.setId(this.getId());
@@ -151,10 +156,23 @@ public class ResourceDo {
     return resource;
   }
 
+  /**
+   * 重置查询关键字
+   * <pre>
+   *   - 备注发生变动
+   *   - 资源标签发生变动
+   * </pre>
+   *
+   * @author 宋志宗 on 2022/4/21
+   */
   private void resetKeyword() {
     String ident = getIdent();
     Set<String> tags = getTags();
+    String note = getNote();
     StringBuilder sb = new StringBuilder(ident);
+    if (StringUtils.isNotBlank(note)) {
+      sb.append(" ").append(note);
+    }
     for (String tag : tags) {
       sb.append(" ").append(tag);
     }

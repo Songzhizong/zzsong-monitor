@@ -1,6 +1,28 @@
 logging:
   config: classpath:logback-spring-dev.xml
 spring:
+  data:
+    mongodb:
+      auto-index-creation: true
+      uri: mongodb://127.0.0.1:27011,127.0.0.1:27012,127.0.0.1:27013/cloud_monitor?maxPoolSize=4
   redis:
     host: 127.0.0.1
     port: 6379
+
+monitor:
+  edge:
+    cluster: default
+    center-base-url: http://127.0.0.1:31201
+    output:
+      #      prometheus:
+      #        - url: http://127.0.0.1:9090/api/v1/write
+      opentsdb:
+        - url: http://127.0.0.1:19000/opentsdb/put
+    read:
+      prometheus:
+        timeout: 5s
+        base-url: http://127.0.0.1:9090
+
+ideal:
+  snowflake:
+    factory-type: redis

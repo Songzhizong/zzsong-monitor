@@ -13,5 +13,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class MonitorCenterProperties {
 
   /** 缓存前缀 */
-  private String cacheProperties = "monitor:cache";
+  private String cachePrefix = "monitor:cache";
 }

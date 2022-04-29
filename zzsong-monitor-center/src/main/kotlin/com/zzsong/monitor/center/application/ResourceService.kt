@@ -1,5 +1,6 @@
 package com.zzsong.monitor.center.application
 
+import com.zzsong.monitor.center.domain.model.resource.ModifiableResourceRepository
 import com.zzsong.monitor.center.domain.model.resource.ResourceCache
 import com.zzsong.monitor.center.domain.model.resource.ResourceDo
 import com.zzsong.monitor.center.domain.model.resource.ResourceRepository
@@ -19,7 +20,8 @@ import org.springframework.transaction.annotation.Transactional
 class ResourceService(
   private val resourceCache: ResourceCache,
   private val resourceRepository: ResourceRepository,
-  private val bizGroupRepository: BizGroupRepository
+  private val bizGroupRepository: BizGroupRepository,
+  private val modifiableResourceRepository: ModifiableResourceRepository,
 ) {
   companion object {
     private val log: Logger = LoggerFactory.getLogger(ResourceService::class.java)
@@ -51,7 +53,7 @@ class ResourceService(
     filter.removeAll(existIdents)
     val resourceDos = filter.map { ResourceDo.create(cluster, it) }
     return try {
-      resourceRepository.saveAll(resourceDos)
+      modifiableResourceRepository.saveAll(resourceDos)
     } catch (e: DuplicateKeyException) {
       emptyList()
     }
@@ -65,11 +67,11 @@ class ResourceService(
   suspend fun changeGroup(cluster: String, idents: Collection<String>, bizGroupId: Long?) {
     var bizGroup: BizGroupDo? = null
     if (bizGroupId != null && bizGroupId > 1) {
-      bizGroup = bizGroupRepository.findByRequiredId(bizGroupId)
+      bizGroup = bizGroupRepository.findRequiredById(bizGroupId)
     }
     val resourceDos = resourceRepository.findAllByClusterAndIdentIn(cluster, idents)
       .onEach { it.changeGroup(bizGroup) }
-    resourceRepository.saveAll(resourceDos)
+    modifiableResourceRepository.saveAll(resourceDos)
   }
 
   /**
@@ -80,7 +82,7 @@ class ResourceService(
   suspend fun addTags(cluster: String, idents: Collection<String>, tags: Collection<String>?) {
     val resourceDos = resourceRepository.findAllByClusterAndIdentIn(cluster, idents)
       .onEach { it.addTags(tags) }
-    resourceRepository.saveAll(resourceDos)
+    modifiableResourceRepository.saveAll(resourceDos)
   }
 
   /**
@@ -91,7 +93,7 @@ class ResourceService(
   suspend fun removeTags(cluster: String, idents: Collection<String>, tags: Collection<String>?) {
     val resourceDos = resourceRepository.findAllByClusterAndIdentIn(cluster, idents)
       .onEach { it.removeTags(tags) }
-    resourceRepository.saveAll(resourceDos)
+    modifiableResourceRepository.saveAll(resourceDos)
   }
 
   /**
@@ -102,7 +104,7 @@ class ResourceService(
   suspend fun changeNote(cluster: String, idents: Collection<String>, note: String?) {
     val resourceDos = resourceRepository.findAllByClusterAndIdentIn(cluster, idents)
       .onEach { it.changeNote(note) }
-    resourceRepository.saveAll(resourceDos)
+    modifiableResourceRepository.saveAll(resourceDos)
   }
 
   /**
@@ -112,7 +114,7 @@ class ResourceService(
    */
   suspend fun delete(cluster: String, idents: Collection<String>) {
     val deleted =
-      resourceRepository.deleteAllByClusterAndIdentIn(cluster, idents)
+      modifiableResourceRepository.deleteAllByClusterAndIdentIn(cluster, idents)
     val count = deleted.size
     if (count > 0) {
       log.info("成功删除监控目标 {}条", count)

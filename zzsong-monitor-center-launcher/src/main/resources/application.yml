@@ -3,7 +3,7 @@ server:
   shutdown: graceful
 spring:
   application:
-    name: ZZSONG-MONITOR-CENTER
+    name: MONITOR-CENTER
   jackson:
     locale: zh_CN
     time-zone: 'GMT+8'
@@ -15,4 +15,4 @@ spring:
   main:
     allow-bean-definition-overriding: true
   profiles:
-    active: local
+    active: dev

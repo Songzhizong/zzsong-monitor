@@ -3,8 +3,8 @@ package com.zzsong.monitor.center.port.http
 import cn.idealframework.transmission.Result
 import cn.idealframework.util.Asserts
 import com.zzsong.monitor.center.application.ClusterService
-import com.zzsong.monitor.common.dto.req.CreateClusterArgs
-import com.zzsong.monitor.common.dto.req.UpdateClusterArgs
+import com.zzsong.monitor.center.args.CreateClusterArgs
+import com.zzsong.monitor.center.args.UpdateClusterArgs
 import com.zzsong.monitor.common.pojo.Cluster
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -36,7 +36,7 @@ class ClusterController(private val clusterService: ClusterService) {
     Asserts.nonnull(connectType, "连接类型不能为空");connectType!!
     val clusterDo = clusterService.create(code, note, address, connectType)
     val cluster = clusterDo.toCluster()
-    return Result.data(cluster)
+    return Result.success(cluster)
   }
 
   /**

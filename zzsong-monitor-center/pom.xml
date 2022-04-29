@@ -13,7 +13,7 @@
   <dependencies>
     <dependency>
       <groupId>com.zzsong</groupId>
-      <artifactId>zzsong-monitor-common</artifactId>
+      <artifactId>zzsong-monitor-prometheus</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>

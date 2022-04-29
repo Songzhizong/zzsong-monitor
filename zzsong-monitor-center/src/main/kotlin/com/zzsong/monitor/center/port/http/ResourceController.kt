@@ -3,10 +3,10 @@ package com.zzsong.monitor.center.port.http
 import cn.idealframework.transmission.Result
 import cn.idealframework.util.Asserts
 import com.zzsong.monitor.center.application.ResourceService
-import com.zzsong.monitor.common.dto.req.ChangeResourceNoteArgs
-import com.zzsong.monitor.common.dto.req.DeleteResourceArgs
-import com.zzsong.monitor.common.dto.req.ResourceDiscoveredArgs
-import com.zzsong.monitor.common.dto.req.ResourceTagArgs
+import com.zzsong.monitor.center.args.ChangeResourceNoteArgs
+import com.zzsong.monitor.center.args.DeleteResourceArgs
+import com.zzsong.monitor.center.args.ResourceTagArgs
+import com.zzsong.monitor.common.req.ResourceDiscoveredArgs
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping

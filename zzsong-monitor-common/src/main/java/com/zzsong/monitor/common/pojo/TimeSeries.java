@@ -5,6 +5,8 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.beans.Transient;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -17,6 +19,7 @@ import java.util.Set;
 @Setter
 public class TimeSeries implements Comparable<TimeSeries> {
   public static final String NAME_LABEL = "__name__";
+  private transient String name = null;
 
   /** 样本 */
   @Nonnull
@@ -35,8 +38,25 @@ public class TimeSeries implements Comparable<TimeSeries> {
     return timeSeries;
   }
 
+  @Nullable
+  @Transient
+  public String getName() {
+    if (name != null) {
+      return name;
+    }
+    for (Label label : labels) {
+      String labelName = label.getName();
+      if (NAME_LABEL.equals(labelName)) {
+        name = label.getValue();
+        break;
+      }
+    }
+    return name;
+  }
+
   @Nonnull
   public TimeSeries setName(@Nonnull String name) {
+    this.name = name;
     return addLabel(NAME_LABEL, name);
   }
 
@@ -44,6 +64,39 @@ public class TimeSeries implements Comparable<TimeSeries> {
   public TimeSeries addLabel(@Nonnull String name, @Nonnull String value) {
     this.getLabels().add(Label.of(name, value));
     return this;
+  }
+
+  @Nonnull
+  public TimeSeries addLabel(@Nonnull Label label) {
+    this.getLabels().add(label);
+    return this;
+  }
+
+  @Nonnull
+  public TimeSeries addLabels(@Nonnull Set<Label> labels) {
+    this.getLabels().addAll(labels);
+    return this;
+  }
+
+  @Nonnull
+  public Metric toMetric() {
+    Metric metric = new Metric();
+    Sample sample = this.getSample();
+    long timestamp = sample.getTimestamp();
+    double value = sample.getValue();
+    metric.setTimestamp(timestamp / 1000);
+    metric.setValue(value);
+    Set<Label> labels = this.getLabels();
+    for (Label label : labels) {
+      String labelName = label.getName();
+      String labelValue = label.getValue();
+      if (NAME_LABEL.equals(labelName)) {
+        metric.setMetric(labelValue);
+        continue;
+      }
+      metric.putTag(labelName, labelValue);
+    }
+    return metric;
   }
 
   @Override
@@ -54,24 +107,6 @@ public class TimeSeries implements Comparable<TimeSeries> {
       return 0;
     }
     return otherTimestamp - timestamp > 0 ? 1 : -1;
-  }
-
-  @Getter
-  @Setter
-  @Accessors(chain = true)
-  public static class Label {
-    /** 名称 */
-    @Nonnull
-    private String name;
-
-    /** 值 */
-    @Nonnull
-    private String value;
-
-    @Nonnull
-    public static Label of(@Nonnull String name, @Nonnull String value) {
-      return new Label().setName(name).setValue(value);
-    }
   }
 
   /**

@@ -1,0 +1,5 @@
+#!/bin/sh
+cd "$(dirname "$0")" || exit
+protoc -I=. --java_out=../java/  remote.proto
+protoc -I=. --java_out=../java/  types.proto
+protoc -I=. --java_out=../java/  gogoproto/gogo.proto

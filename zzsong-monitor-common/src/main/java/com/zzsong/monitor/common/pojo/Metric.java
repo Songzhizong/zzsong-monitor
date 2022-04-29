@@ -82,4 +82,5 @@ public class Metric {
     tags.forEach(timeSeries::addLabel);
     return timeSeries;
   }
+
 }

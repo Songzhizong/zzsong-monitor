@@ -6,4 +6,6 @@ package com.zzsong.monitor.common.constants;
 public interface MonitorConstants {
 
   String TARGET_UP = "target_up";
+
+  String IDENT = "ident";
 }

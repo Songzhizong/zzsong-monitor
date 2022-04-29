@@ -10,7 +10,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Version;
-import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.annotation.Nonnull;
@@ -23,8 +24,12 @@ import javax.annotation.Nullable;
  */
 @Getter
 @Setter
-@Document("monitor_cluster")
+@Document(ClusterDo.DOCUMENT_NAME)
+@CompoundIndexes({
+  @CompoundIndex(name = "code", def = "{code:1}", unique = true),
+})
 public class ClusterDo {
+  public static final String DOCUMENT_NAME = "monitor_cluster";
 
   /** 主键 */
   @Id
@@ -32,13 +37,11 @@ public class ClusterDo {
 
   /** 集群编码 */
   @Nonnull
-  @Indexed(name = "monitor_cluster_code", unique = true)
   private String code = "";
 
   /** 集群备注 */
   @Nonnull
   private String note = "";
-
 
   /** 访问地址 */
   @Nonnull
@@ -60,17 +63,6 @@ public class ClusterDo {
   @LastModifiedDate
   private long updatedTime;
 
-  public void update(@Nullable String note,
-                     @Nullable String address,
-                     @Nonnull ConnectType connectType) {
-    if (connectType == ConnectType.DIRECT) {
-      Asserts.notBlank(address, "直连模式下集群的连接地址不能为空");
-    }
-    this.setNote(note);
-    this.setAddress(address);
-    this.setConnectType(connectType);
-  }
-
   @Nonnull
   public static ClusterDo create(@Nonnull String code,
                                  @Nullable String note,
@@ -85,6 +77,17 @@ public class ClusterDo {
     clusterDo.setAddress(address);
     clusterDo.setConnectType(connectType);
     return clusterDo;
+  }
+
+  public void update(@Nullable String note,
+                     @Nullable String address,
+                     @Nonnull ConnectType connectType) {
+    if (connectType == ConnectType.DIRECT) {
+      Asserts.notBlank(address, "直连模式下集群的连接地址不能为空");
+    }
+    this.setNote(note);
+    this.setAddress(address);
+    this.setConnectType(connectType);
   }
 
   @Nonnull

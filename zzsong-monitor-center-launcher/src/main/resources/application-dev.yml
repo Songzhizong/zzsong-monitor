@@ -1,6 +1,14 @@
 logging:
   config: classpath:logback-spring-dev.xml
 spring:
+  data:
+    mongodb:
+      auto-index-creation: true
+      uri: mongodb://127.0.0.1:27011,127.0.0.1:27012,127.0.0.1:27013/cloud_monitor?maxPoolSize=4
   redis:
     host: 127.0.0.1
     port: 6379
+
+ideal:
+  snowflake:
+    factory-type: redis

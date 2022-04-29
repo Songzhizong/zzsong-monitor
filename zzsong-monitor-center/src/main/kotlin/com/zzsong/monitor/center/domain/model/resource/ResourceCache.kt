@@ -16,7 +16,7 @@ import java.time.Duration
  */
 @Component
 class ResourceCache(
-  private val properties: MonitorCenterProperties,
+  properties: MonitorCenterProperties,
   private val redisTemplate: ReactiveStringRedisTemplate
 ) {
   companion object {
@@ -27,11 +27,11 @@ class ResourceCache(
   private val prefix: String
 
   init {
-    val cacheProperties = properties.cacheProperties
-    this.prefix = if (cacheProperties == null || cacheProperties.isBlank()) {
+    val cachePrefix = properties.cachePrefix
+    this.prefix = if (cachePrefix == null || cachePrefix.isBlank()) {
       ""
     } else {
-      "$cacheProperties:"
+      "$cachePrefix:"
     }
   }
 
